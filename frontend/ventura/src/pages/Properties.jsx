@@ -1,20 +1,16 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import PropertyGrid from '../components/PropertyGrid';
-import { fetchProperties } from '../api';
+import { properties as staticProperties } from '../data/properties';
 
 const Properties = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadProperties = async () => {
-            setLoading(true);
-            const data = await fetchProperties();
-            setProperties(data);
-            setLoading(false);
-        };
-        loadProperties();
+        setLoading(true);
+        setProperties(staticProperties);
+        setLoading(false);
         window.scrollTo(0, 0);
     }, []);
 

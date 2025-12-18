@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchPropertyById } from '../api';
-import Navbar from '../components/Navbar';
+import { properties as staticProperties } from '../data/properties';
 
 const PropertyDetails = () => {
     const { id } = useParams();
@@ -9,13 +8,10 @@ const PropertyDetails = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const getProperty = async () => {
-            setLoading(true);
-            const data = await fetchPropertyById(id);
-            setProperty(data);
-            setLoading(false);
-        };
-        getProperty();
+        setLoading(true);
+        const foundProperty = staticProperties.find(p => p._id === id);
+        setProperty(foundProperty);
+        setLoading(false);
         window.scrollTo(0, 0);
     }, [id]);
 
