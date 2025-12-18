@@ -1,4 +1,4 @@
-const API_URL = 'https://www.render.com/api';
+const API_URL = 'https://ventura-9rvn.onrender.com/api';
 
 export const fetchProperties = async () => {
     try {
