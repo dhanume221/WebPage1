@@ -11,7 +11,7 @@ const corsOptions = {
     origin: [
         'http://localhost:5173',
         'http://localhost:3000',
-        'https://web-page1-mr8a.vercel.app/',
+        'https://web-page1-efp8.vercel.app',
         // Add your frontend deployment URL here (e.g., Vercel, Netlify)
         // 'https://your-frontend-app.vercel.app'
     ],
