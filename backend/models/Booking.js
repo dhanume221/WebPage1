@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const BookingSchema = new mongoose.Schema({
     propertyId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Property',
+        type: String,
         required: true,
     },
     userId: {
-        type: String, // Placeholder for user ID or user details object
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
     checkIn: {

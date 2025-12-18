@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { login } from '../api';
 
 const LoginModal = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     if (!isOpen) return null;
 
@@ -20,19 +22,27 @@ const LoginModal = ({ isOpen, onClose }) => {
 
         if (!password) {
             newErrors.password = "Password is required";
-        } else if (password.length < 8) {
-            newErrors.password = "Password must be at least 8 characters";
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-            console.log("Login successful:", { email, password });
-            // Proceed with login logic
+            setLoading(true);
+            try {
+                const data = await login({ email, password });
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                onClose();
+                window.location.reload(); // Refresh to update UI state
+            } catch (err) {
+                setErrors({ submit: err.message });
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -78,8 +88,10 @@ const LoginModal = ({ isOpen, onClose }) => {
                         <a href="#" style={{ fontSize: '0.8rem', color: 'var(--primary-gold)', fontWeight: '600' }}>Forgot password?</a>
                     </div>
 
-                    <button className="btn-luxury" style={{ width: '100%' }} type="submit">
-                        SIGN IN
+                    {errors.submit && <div style={{ color: '#ff4d4d', marginBottom: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>{errors.submit}</div>}
+
+                    <button className="btn-luxury" style={{ width: '100%' }} type="submit" disabled={loading}>
+                        {loading ? 'SIGNING IN...' : 'SIGN IN'}
                     </button>
 
                     <div style={{ marginTop: '2rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>

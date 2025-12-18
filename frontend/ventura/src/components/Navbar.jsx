@@ -6,16 +6,29 @@ const Navbar = ({ darkText = false }) => {
     const [scrolled, setScrolled] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
         };
         window.addEventListener('scroll', handleScroll);
+
+        // Initial user check
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) setUser(JSON.parse(storedUser));
+
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        window.location.reload();
+    };
 
     return (
         <>
@@ -28,20 +41,38 @@ const Navbar = ({ darkText = false }) => {
                     <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
                         <Link to="/destinations" onClick={() => setIsMenuOpen(false)}>Destinations</Link>
                         <Link to="/properties" onClick={() => setIsMenuOpen(false)}>Properties</Link>
+                        {user && <Link to="/my-bookings" onClick={() => setIsMenuOpen(false)}>My Bookings</Link>}
                         <Link to="/ventura-one" onClick={() => setIsMenuOpen(false)}>Ventura One</Link>
                         <Link to="/tier-benefits" onClick={() => setIsMenuOpen(false)}>Tier Benefits</Link>
                         {/* Mobile only action */}
                         <div className="mobile-only" style={{ marginTop: '2rem' }}>
-                            <button className="user-btn" onClick={() => { setIsLoginOpen(true); setIsMenuOpen(false); }}>
-                                LOGIN
-                            </button>
+                            {user ? (
+                                <button className="user-btn" onClick={handleLogout}>
+                                    LOGOUT
+                                </button>
+                            ) : (
+                                <button className="user-btn" onClick={() => { setIsLoginOpen(true); setIsMenuOpen(false); }}>
+                                    LOGIN
+                                </button>
+                            )}
                         </div>
                     </div>
 
                     <div className="nav-actions">
-                        <button className="user-btn desktop-only" onClick={() => setIsLoginOpen(true)}>
-                            LOGIN
-                        </button>
+                        {user ? (
+                            <div className="user-info desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <span style={{ color: darkText ? 'var(--luxury-dark)' : 'var(--white)', fontSize: '0.8rem', fontWeight: '600' }}>
+                                    HELLO, {user.name.toUpperCase()}
+                                </span>
+                                <button className="user-btn" onClick={handleLogout}>
+                                    LOGOUT
+                                </button>
+                            </div>
+                        ) : (
+                            <button className="user-btn desktop-only" onClick={() => setIsLoginOpen(true)}>
+                                LOGIN
+                            </button>
+                        )}
 
                         <button className="menu-toggle" onClick={toggleMenu} aria-label="Toggle Menu">
                             <span className="hamburger"></span>

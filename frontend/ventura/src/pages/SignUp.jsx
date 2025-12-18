@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { register } from '../api';
 
 const SignUp = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -11,6 +13,7 @@ const SignUp = () => {
         agree: false
     });
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -49,10 +52,8 @@ const SignUp = () => {
 
         if (!formData.password) {
             newErrors.password = "Password is required";
-        } else if (formData.password.length < 8) {
-            newErrors.password = "Minimum 8 characters";
-        } else if (!/(?=.*[a-zA-Z])(?=.*[0-9])/.test(formData.password)) {
-            newErrors.password = "Must include letters and numbers";
+        } else if (formData.password.length < 6) {
+            newErrors.password = "Minimum 6 characters";
         }
 
         if (!formData.agree) {
@@ -63,11 +64,25 @@ const SignUp = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-            console.log("Registration successful:", formData);
-            // Proceed with signup logic
+            setLoading(true);
+            try {
+                const name = `${formData.firstName} ${formData.lastName}`;
+                const data = await register({
+                    name,
+                    email: formData.email,
+                    password: formData.password
+                });
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                navigate('/');
+            } catch (err) {
+                setErrors({ submit: err.message });
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -168,8 +183,10 @@ const SignUp = () => {
                                 </label>
                             </div>
 
-                            <button className="btn-luxury" style={{ width: '100%' }} type="submit">
-                                CREATE ACCOUNT
+                            {errors.submit && <div style={{ color: '#ff4d4d', marginBottom: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>{errors.submit}</div>}
+
+                            <button className="btn-luxury" style={{ width: '100%' }} type="submit" disabled={loading}>
+                                {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
                             </button>
 
                             <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>

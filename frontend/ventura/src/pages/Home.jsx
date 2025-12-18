@@ -6,6 +6,8 @@ import { properties as staticProperties } from '../data/properties';
 
 const Home = () => {
     const [properties, setProperties] = useState([]);
+    const [filteredProperties, setFilteredProperties] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -15,12 +17,54 @@ const Home = () => {
         window.scrollTo(0, 0);
     }, []);
 
+    const handleSearch = (searchData) => {
+        setIsSearching(true);
+        setLoading(true);
+
+        // Simulate a small delay for premium feel
+        setTimeout(() => {
+            const filtered = staticProperties.filter(property => {
+                const matchDestination = !searchData.destination || property.location.includes(searchData.destination);
+                const matchGuests = !searchData.guests || property.features.guests >= parseInt(searchData.guests);
+                return matchDestination && matchGuests;
+            });
+            setFilteredProperties(filtered);
+            setLoading(false);
+
+            // Scroll to results
+            const resultsSection = document.getElementById('search-results');
+            if (resultsSection) {
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 500);
+    };
+
     return (
         <>
             <Navbar />
-            <Hero />
+            <Hero onSearch={handleSearch} />
             <main>
-                <PropertyGrid properties={properties} loading={loading} />
+                {isSearching && (
+                    <section id="search-results" className="py-20" style={{ backgroundColor: 'var(--white)' }}>
+                        <div className="container-custom">
+                            <div style={{ marginBottom: '3rem', borderLeft: '4px solid var(--primary-gold)', paddingLeft: '1.5rem' }}>
+                                <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Search Results</h2>
+                                <p style={{ color: 'var(--text-muted)' }}>
+                                    Found {filteredProperties.length} elite properties matching your criteria.
+                                </p>
+                            </div>
+                            <PropertyGrid properties={filteredProperties} loading={loading} />
+                        </div>
+                    </section>
+                )}
+
+                {!isSearching && (
+                    <section className="featured-selection py-20">
+                        <div className="container-custom">
+                            <PropertyGrid properties={properties.filter(p => p.featured)} loading={loading} />
+                        </div>
+                    </section>
+                )}
 
                 <section className="why-us" style={{ backgroundColor: 'var(--luxury-light)', padding: '5rem 0' }}>
                     <div className="container-custom text-center">
