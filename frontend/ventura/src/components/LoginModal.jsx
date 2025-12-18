@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { login } from '../api';
 
-const LoginModal = ({ isOpen, onClose }) => {
+const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
@@ -36,8 +36,14 @@ const LoginModal = ({ isOpen, onClose }) => {
                 const data = await login({ email, password });
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                onClose();
-                window.location.reload(); // Refresh to update UI state
+
+                // Call the success callback to update parent state
+                if (onLoginSuccess) {
+                    onLoginSuccess(data.user);
+                } else {
+                    // Fallback to reload if callback not provided
+                    window.location.reload();
+                }
             } catch (err) {
                 setErrors({ submit: err.message });
             } finally {

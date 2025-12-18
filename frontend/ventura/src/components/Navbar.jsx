@@ -81,7 +81,14 @@ const Navbar = ({ darkText = false }) => {
                 </div>
             </nav>
 
-            <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+            <LoginModal
+                isOpen={isLoginOpen}
+                onClose={() => setIsLoginOpen(false)}
+                onLoginSuccess={(userData) => {
+                    setUser(userData);
+                    setIsLoginOpen(false);
+                }}
+            />
         </>
     );
 };
