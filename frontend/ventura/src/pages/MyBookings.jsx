@@ -19,7 +19,7 @@ const MyBookings = () => {
 
         const getBookings = async () => {
             try {
-                const data = await fetchMyBookings(token);
+                const data = await fetchMyBookings();
                 // Enhance bookings with property details from static data
                 const enhancedBookings = data.map(booking => {
                     const property = staticProperties.find(p => p._id === booking.propertyId);

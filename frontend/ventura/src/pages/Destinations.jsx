@@ -6,25 +6,25 @@ const Destinations = () => {
     const destinations = [
         {
             name: "Palm Jumeirah",
-            image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=2070&auto=format&fit=crop",
+            image: "/assets/photo-1512453979798-5ea266f8880c.webp",
             count: 12,
             description: "An iconic man-made island offering world-class luxury villas and beachfront living."
         },
         {
             name: "Downtown Dubai",
-            image: "https://images.unsplash.com/photo-1546412414-8035e1776c9a?q=80&w=2070&auto=format&fit=crop",
+            image: "/assets/photo-1546412414-8035e1776c9a.webp",
             count: 8,
             description: "The heart of Dubai, home to the Burj Khalifa and prestigious high-rise penthouses."
         },
         {
             name: "Dubai Marina",
-            image: "https://images.unsplash.com/photo-1559762717-99c81ac85459?q=80&w=1974&auto=format&fit=crop",
+            image: "/assets/photo-1559762717-99c81ac85459.webp",
             count: 15,
             description: "A vibrant waterfront community with stunning skylines and luxury apartments."
         },
         {
             name: "Arabian Ranches",
-            image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop",
+            image: "/assets/photo-1600585154340-be6161a56a0c.webp",
             count: 5,
             description: "Peaceful desert-themed villas with lush greenery and family-centric amenities."
         }

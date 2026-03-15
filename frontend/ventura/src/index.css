@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
 :root {
   --primary-gold: #ffd075;
   --luxury-dark: #0a0a0a;
@@ -9,8 +11,6 @@
   --font-serif: 'Playfair Display', serif;
   --container-max: 1280px;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
 
 * {
   box-sizing: border-box;

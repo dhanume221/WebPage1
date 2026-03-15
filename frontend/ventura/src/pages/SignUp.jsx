@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { register } from '../api';
+import { register, fetchSplashToken } from '../api';
 
 const SignUp = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        name: '',
         email: '',
         password: '',
+        username: '',
+        phone: 0,
         agree: false
     });
     const [errors, setErrors] = useState({});
@@ -30,18 +31,13 @@ const SignUp = () => {
     const validate = () => {
         const newErrors = {};
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const nameRegex = /^[A-Za-z]+$/;
+        const nameRegex = /^[A-Za-z\s]+$/;
+        const usernameRegex = /^[A-Za-z0-9_]+$/;
 
-        if (!formData.firstName) {
-            newErrors.firstName = "First name is required";
-        } else if (!nameRegex.test(formData.firstName)) {
-            newErrors.firstName = "A-Z only";
-        }
-
-        if (!formData.lastName) {
-            newErrors.lastName = "Last name is required";
-        } else if (!nameRegex.test(formData.lastName)) {
-            newErrors.lastName = "A-Z only";
+        if (!formData.name) {
+            newErrors.name = "Name is required";
+        } else if (!nameRegex.test(formData.name)) {
+            newErrors.name = "Letters and spaces only";
         }
 
         if (!formData.email) {
@@ -54,6 +50,18 @@ const SignUp = () => {
             newErrors.password = "Password is required";
         } else if (formData.password.length < 6) {
             newErrors.password = "Minimum 6 characters";
+        }
+
+        if (!formData.username) {
+            newErrors.username = "Username is required";
+        } else if (!usernameRegex.test(formData.username)) {
+            newErrors.username = "Alphanumeric and underscores only";
+        }
+
+        if (!formData.phone) {
+            newErrors.phone = "Phone is required";
+        } else if (!/^\d+$/.test(String(formData.phone))) {
+            newErrors.phone = "Phone number must be digits";
         }
 
         if (!formData.agree) {
@@ -69,15 +77,18 @@ const SignUp = () => {
         if (validate()) {
             setLoading(true);
             try {
-                const name = `${formData.firstName} ${formData.lastName}`;
+                const splashToken = await fetchSplashToken();
                 const data = await register({
-                    name,
+                    name: formData.name,
                     email: formData.email,
-                    password: formData.password
+                    password: formData.password,
+                    username: formData.username,
+                    phone: Number(formData.phone),
+                    token: splashToken
                 });
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                navigate('/');
+                localStorage.setItem('token', data.data.token);
+                localStorage.setItem('user', JSON.stringify(data.data));
+                navigate('/dashboard');
             } catch (err) {
                 setErrors({ submit: err.message });
             } finally {
@@ -94,7 +105,7 @@ const SignUp = () => {
                 {/* Visual Side */}
                 <div className="visual-side" style={{ position: 'relative', overflow: 'hidden' }}>
                     <img
-                        src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=2070&auto=format&fit=crop"
+                        src="/assets/photo-1600607687920-4e2a09cf159d.webp"
                         alt="Luxury Interior"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
@@ -102,7 +113,7 @@ const SignUp = () => {
                     <div style={{ position: 'absolute', bottom: '5rem', left: '5rem', color: 'var(--white)', maxWidth: '400px' }}>
                         <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', fontFamily: 'var(--font-serif)' }}>Elevate Your Journey</h2>
                         <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>
-                            Join Ventura One and unlock exclusive access to the world's most prestigious residences.
+                            Join Ventura One today and unlock exclusive access to the world's most prestigious residences.
                         </p>
                     </div>
                 </div>
@@ -111,37 +122,50 @@ const SignUp = () => {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--white)', padding: '5rem' }}>
                     <div style={{ width: '100%', maxWidth: '450px' }}>
                         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', letterSpacing: '0.4em', marginBottom: '2rem' }}>VENTURA</div>
+                            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', letterSpacing: '0.4em', marginBottom: '1rem', marginTop: '1rem' }}>VENTURA</div>
                             <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', fontStyle: 'italic' }}>Become a Member</h1>
                             <p style={{ color: 'var(--text-muted)' }}>Experience hospitality without compromise.</p>
                         </div>
 
                         <form onSubmit={handleSubmit}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem', alignItems: 'flex-start' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem', alignItems: 'flex-start' }}>
                                 <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label" style={{ marginBottom: '0.2rem' }}>First Name</label>
+                                    <label className="form-label" style={{ marginBottom: '0.2rem' }}>Full Name</label>
                                     <input
-                                        name="firstName"
+                                        name="name"
                                         type="text"
-                                        className={`form-input ${errors.firstName ? 'input-error' : ''}`}
-                                        placeholder="Alexander"
-                                        value={formData.firstName}
+                                        className={`form-input ${errors.name ? 'input-error' : ''}`}
+                                        placeholder="Alexander Vance"
+                                        value={formData.name}
                                         onChange={handleChange}
                                     />
-                                    {errors.firstName && <span className="error-text">{errors.firstName}</span>}
+                                    {errors.name && <span className="error-text">{errors.name}</span>}
                                 </div>
                                 <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label" style={{ marginBottom: '0.2rem' }}>Last Name</label>
+                                    <label className="form-label" style={{ marginBottom: '0.2rem' }}>Username</label>
                                     <input
-                                        name="lastName"
+                                        name="username"
                                         type="text"
-                                        className={`form-input ${errors.lastName ? 'input-error' : ''}`}
-                                        placeholder="Vance"
-                                        value={formData.lastName}
+                                        className={`form-input ${errors.username ? 'input-error' : ''}`}
+                                        placeholder="alexv"
+                                        value={formData.username}
                                         onChange={handleChange}
                                     />
-                                    {errors.lastName && <span className="error-text">{errors.lastName}</span>}
+                                    {errors.username && <span className="error-text">{errors.username}</span>}
                                 </div>
+                            </div>
+
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label className="form-label">Phone Number</label>
+                                <input
+                                    name="phone"
+                                    type="tel"
+                                    className={`form-input ${errors.phone ? 'input-error' : ''}`}
+                                    placeholder="1234567890"
+                                    value={formData.phone || ''}
+                                    onChange={handleChange}
+                                />
+                                {errors.phone && <span className="error-text">{errors.phone}</span>}
                             </div>
 
                             <div className="form-group">

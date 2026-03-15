@@ -38,7 +38,7 @@ const Hero = ({ onSearch }) => {
             <div
                 className="hero-bg"
                 style={{
-                    backgroundImage: `url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop')`,
+                    backgroundImage: `url(/assets/photo-1542314831-068cd1dbfeeb.webp)`,
                 }}
             >
                 <div className="hero-overlay"></div>

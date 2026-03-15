@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { login } from '../api';
+import { Link, useNavigate } from 'react-router-dom';
+import { login, fetchSplashToken } from '../api';
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     if (!isOpen) return null;
 
@@ -15,9 +16,9 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!email) {
-            newErrors.email = "Email is required";
-        } else if (!emailRegex.test(email)) {
-            newErrors.email = "Please enter a valid email address";
+            newErrors.email = "User ID is required";
+        } else if (isNaN(Number(email))) {
+            newErrors.email = "Please enter a valid numeric User ID";
         }
 
         if (!password) {
@@ -33,16 +34,18 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         if (validate()) {
             setLoading(true);
             try {
-                const data = await login({ email, password });
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+                const splashToken = await fetchSplashToken();
+                const numericUserId = Number(email);
+                const data = await login({ userId: numericUserId, password: password, token: splashToken });
+                localStorage.setItem('token', data.data.token);
+                localStorage.setItem('user', JSON.stringify(data.data)); // Contains userid
 
-                // Call the success callback to update parent state
                 if (onLoginSuccess) {
-                    onLoginSuccess(data.user);
+                    onLoginSuccess(data.data);
+                    navigate('/dashboard');  // data element holds userid, token
                 } else {
-                    // Fallback to reload if callback not provided
-                    window.location.reload();
+                    onClose(); // Close modal on success
+                    // Navigate to dashboard
                 }
             } catch (err) {
                 setErrors({ submit: err.message });
@@ -67,11 +70,11 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label className="form-label">Email Address</label>
+                        <label className="form-label">User ID (Number)</label>
                         <input
-                            type="email"
+                            type="text"
                             className={`form-input ${errors.email ? 'input-error' : ''}`}
-                            placeholder="name@example.com"
+                            placeholder="Enter your numeric User ID"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />

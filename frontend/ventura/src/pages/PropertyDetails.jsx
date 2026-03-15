@@ -62,7 +62,7 @@ const PropertyDetails = () => {
                 propertyId: id,
                 ...bookingData,
                 totalPrice: totalPrice
-            }, token);
+            });
 
             setStatus({ type: 'success', message: 'Reservation successful! We will contact you soon.' });
         } catch (err) {

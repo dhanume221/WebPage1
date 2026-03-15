@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
 
 const Navbar = ({ darkText = false }) => {
+    const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,8 +16,18 @@ const Navbar = ({ darkText = false }) => {
         window.addEventListener('scroll', handleScroll);
 
         // Initial user check
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) setUser(JSON.parse(storedUser));
+        try {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser && storedUser !== "undefined") {
+                setUser(JSON.parse(storedUser));
+            } else {
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+            }
+        } catch (e) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+        }
 
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -32,7 +43,7 @@ const Navbar = ({ darkText = false }) => {
 
     return (
         <>
-            <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${darkText ? 'dark-text' : ''} ${isMenuOpen ? 'menu-open' : ''}`}>
+            <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${darkText && !scrolled ? 'dark-text' : ''} ${isMenuOpen ? 'menu-open' : ''}`}>
                 <div className="container-custom nav-container">
                     <Link to="/" className="logo" onClick={() => setIsMenuOpen(false)}>
                         <img src="/ventura_logo.jpg" alt="Ventura" className="nav-logo" />
@@ -61,8 +72,8 @@ const Navbar = ({ darkText = false }) => {
                     <div className="nav-actions">
                         {user ? (
                             <div className="user-info desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <span style={{ color: darkText ? 'var(--luxury-dark)' : 'var(--white)', fontSize: '0.8rem', fontWeight: '600' }}>
-                                    HELLO, {user.name.toUpperCase()}
+                                <span style={{ color: (darkText && !scrolled) ? 'var(--luxury-dark)' : 'var(--white)', fontSize: '0.8rem', fontWeight: '600' }}>
+                                    HELLO, <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} style={{ color: 'inherit', textDecoration: 'none' }}>{user.username ? user.username.toUpperCase() : (user.name ? user.name.toUpperCase() : `USER ${user.userid || ''}`)}</Link>
                                 </span>
                                 <button className="user-btn" onClick={handleLogout}>
                                     LOGOUT

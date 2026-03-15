@@ -9,7 +9,7 @@ const PropertyGrid = ({ properties, loading, hideHeader = false }) => {
                     {[1, 2, 3].map((n) => (
                         <div key={n} style={{ opacity: 0.5 }}>
                             <div style={{ backgroundColor: '#eee', aspectRatio: '4/3', width: '100%', marginBottom: '1rem' }}></div>
-                            <div style={{ height: '1rem', backgroundColor: '#eee', width: '75%', marginBottom: '0.5rem' }}></div>
+                            <div style={{ height: '1rem', backgroundColor: '#eee', width: '75%', marginBottom: '0.5rem',border: '1px solid #0f0e0e' }}></div>
                             <div style={{ height: '1rem', backgroundColor: '#eee', width: '50%' }}></div>
                         </div>
                     ))}

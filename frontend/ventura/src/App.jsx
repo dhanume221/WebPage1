@@ -7,6 +7,7 @@ import VenturaOne from './pages/VenturaOne';
 import TierBenefits from './pages/TierBenefits';
 import SignUp from './pages/SignUp';
 import MyBookings from './pages/MyBookings';
+import UserDashboard from './pages/UserDashboard';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/tier-benefits" element={<TierBenefits />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
         </Routes>
 
         <footer className="footer">
